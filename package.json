@@ -1,0 +1,27 @@
+{
+  "name": "cordova-plugin-today-widget",
+  "version": "0.0.1",
+  "description": "Add a toaday widget app extension target to your cordova project.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DavidStrausz/cordova-plugin-today-widget"
+  },
+  "keywords": [
+    "iOS",
+    "App Extension",
+    "Today Widget",
+    "Cordova",
+    "Ionic",
+    "Plugin",
+    "node-excode"
+  ],
+  "author": "David Strauß",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DavidStrausz/cordova-plugin-today-widget/issues"
+  },
+  "homepage": "https://github.com/DavidStrausz/cordova-plugin-today-widget",
+  "dependencies": {
+    "xcode": "git+https://github.com/apache/cordova-node-xcode.git"
+  }
+}

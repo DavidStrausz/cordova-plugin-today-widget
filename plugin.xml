@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        id="cordova-plugin-today-widget"
+        version="0.0.1">
+
+  <name>Today Widget App Extension</name>
+  <author>David Strauß</author>
+
+  <description>
+    Add a toaday widget app extension target to your cordova project.
+  </description>
+
+  <engines>
+    <engine name="cordova" version="&gt;=6.0.0"/>
+  </engines>
+
+  <platform name="ios">
+    <config-file target="config.xml" parent="/*"></config-file>
+
+    <hook type="after_platform_add" src="hooks/copyExtensionFolderToIosProjectFolder.js"/>
+    <hook type="after_platform_add" src="hooks/addTodayWidgetToProject.js"/>
+  </platform>
+</plugin>
