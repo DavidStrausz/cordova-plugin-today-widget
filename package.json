@@ -22,6 +22,8 @@
   },
   "homepage": "https://github.com/DavidStrausz/cordova-plugin-today-widget",
   "dependencies": {
+    "file-system": "^2.2.2",
+    "path": "^0.12.7",
     "xcode": "git+https://github.com/apache/cordova-node-xcode.git"
   }
 }

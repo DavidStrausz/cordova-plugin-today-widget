@@ -69,6 +69,57 @@ module.exports = function (context) {
             var widgetName = projectName + ' Widget';
             log('Your widget will be named: ' + widgetName, 'info');
 
+            var widgetFolder = path.join(iosFolder, widgetName);
+            var sourceFiles = [];
+            var resourceFiles = [];
+            var configFiles = [];
+            var addBridgingHeader = false;
+
+            fs.readdirSync(widgetFolder).forEach(file => {
+                if (! /^\..*/.test(file)) {
+                    var fileExtension = path.extname(file);
+                    switch (fileExtension) {
+                        case '.swift':
+                            sourceFiles.push(file)
+                            break;
+                        case '.plist':
+                            configFiles.push(file);
+                            break;
+                        case '.entitlements':
+                            configFiles.push(file);
+                            break;
+                        case '.storyboard':
+                            resourceFiles.push(file);
+                            break;
+                        case '.h':
+                            configFiles.push(file);
+                            if (file === 'Bridging-Header.h') {
+                                addBridgingHeader = true;
+                            }
+                            break;
+                        default:
+                            resourceFiles.push(file);
+                            break;
+                    }
+                }
+            })
+
+            log('Found following files in your widget folder:', 'info');
+            console.log('Source-files: ');
+            sourceFiles.forEach(file => {
+                console.log(' - ', file);
+            });
+
+            console.log('Config-files: ');
+            configFiles.forEach(file => {
+                console.log(' - ', file);
+            });
+
+            console.log('Resource-files: ');
+            resourceFiles.forEach(file => {
+                console.log(' - ', file);
+            });
+
             // Add PBXNativeTarget to the project
             var target = pbxProject.addTarget(widgetName, "app_extension", widgetName);
             if (target) {
@@ -86,12 +137,11 @@ module.exports = function (context) {
             pbxProject.addToPbxGroup(pbxGroupKey, customTemplateKey);
             log('Successfully added the widgets PbxGroup to cordovas CustomTemplate!', 'info');
 
-            // Add files which are not part of any build phase
-            var plistFile = pbxProject.addFile(widgetName + '-Info.plist', pbxGroupKey);
-            var entitlementsFile = pbxProject.addFile(widgetName + '.entitlements', pbxGroupKey);
-            if (plistFile && entitlementsFile) {
-                log('Successfully added the plist and entitlements configuration files!', 'info');
-            }
+            // Add files which are not part of any build phase (config)
+            configFiles.forEach(configFile => {
+                pbxProject.addFile(configFile, pbxGroupKey);
+            })
+            log('Successfully added ' + configFiles.length + ' configuration files!', 'info');
 
             // Add a new PBXSourcesBuildPhase for our TodayViewController (we can't add it to the existing one because a today extension is kind of an extra app)
             var sourcesBuildPhase = pbxProject.addBuildPhase([], 'PBXSourcesBuildPhase', 'Sources', target.uuid);
@@ -100,10 +150,11 @@ module.exports = function (context) {
             }
 
             // Add a new source file and add it to our PbxGroup and our newly created PBXSourcesBuildPhase
-            var sourceFile = pbxProject.addSourceFile('TodayViewController.swift', { target: target.uuid }, pbxGroupKey);
-            if (sourceFile) {
-                log('Successfully added source file to PbxGroup and PBXSourcesBuildPhases!', 'info');
-            }
+            sourceFiles.forEach(sourcefile => {
+                pbxProject.addSourceFile(sourcefile, { target: target.uuid }, pbxGroupKey);
+            })
+
+            log('Successfully added ' + sourceFiles.length + ' source files to PbxGroup and PBXSourcesBuildPhase!', 'info');
 
             // Add a new PBXFrameworksBuildPhase for the Frameworks used by the widget (NotificationCenter.framework, libCordova.a)
             var frameworksBuildPhase = pbxProject.addBuildPhase([], 'PBXFrameworksBuildPhase', 'Frameworks', target.uuid);
@@ -125,10 +176,11 @@ module.exports = function (context) {
             }
 
             //  Add the resource file and include it into the targest PbxResourcesBuildPhase and PbxGroup
-            var resource = pbxProject.addResourceFile('MainInterface.storyboard', { target: target.uuid }, pbxGroupKey);
-            if (resource) {
-                log('Successfully added MainInterface.storyboard as a resource!', 'info');
-            }
+            resourceFiles.forEach(resourcefile => {
+                pbxProject.addResourceFile(resourcefile, { target: target.uuid }, pbxGroupKey);
+            })
+
+            log('Successfully added ' + resourceFiles.length + ' resource files!', 'info');
 
             // Add build settings to support Swift just for the widget
             var configurations = pbxProject.pbxXCBuildConfigurationSection();
@@ -140,6 +192,9 @@ module.exports = function (context) {
                         if (productName.indexOf('Widget') >= 0) {
                             buildSettingsObj['SWIFT_VERSION'] = '3.0';
                             buildSettingsObj['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = 'YES';
+                            if (addBridgingHeader) {
+                                buildSettingsObj['SWIFT_OBJC_BRIDGING_HEADER'] = '"$(PROJECT_DIR)/' + widgetName + '/Bridging-Header.h"';
+                            }
                         }
                     }
                 }
