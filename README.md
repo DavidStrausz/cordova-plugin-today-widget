@@ -8,21 +8,22 @@ This plugin extends your existing xcode project by parsing and modifying the pro
 
 * Name your plugin `<Name of your XCode project> Widget`.
 * Add a Bundle identifier: `Targets > Select your widget > General`) and name it: `<Bundle-ID of your host app>.widget` (it has to be prefixed by the host apps bundle id).
-* Enable the `App Groups` entitlement (`Targets > Select your widget > Capabilities`) and name your group: `group.<Bundle-ID of your host app>` (you can use the group to share NSUserDefaults between the Widget and the main App).
-* Implement your widget using `TodayViewController.swift` and `MainInterface.storyboard` (you should be able to add additional source-files too, but i did not test it).
+* [optional] Enable the `App Groups` entitlement (`Targets > Select your widget > Capabilities`) and name your group: `group.<Bundle-ID of your host app>` (you can use the group to share NSUserDefaults between the Widget and the main App).
+* Implement your widget using `TodayViewController.swift` and `MainInterface.storyboard` (you can add additional source-files too).
 * When done implementing copy the `<Widget name>` folder from `</platforms/ios>` to `</www>` (it will be copied from here by the plugin).
 * Make sure the `.plist` file lists the correct bundle identifier
 * If your `MainInterface.storyboard` is listed in a sub-older named `Base.lproj`, pull it out of the folder and delete the folder (I did not handle variant-groups for different languages in the script).
-* If you want to use an objective-c bridging header you can add it to the folder, just make sure it is named `Bridging-Header.h`
-* Every file that is not a `.swift`, `.h`, `.plist`, `.entitlements` or `.storyboard` file will be added as a resource file to the project
+* If you want to use an objective-c bridging header you can add it to the folder, just make sure it is named `Header.h` (`Bridging-Header.h` works too but the file won't be listed in XCode because the cordova bridging header has the same name and node-xcode thinks's it's the same file because it's checking the name and not the UUID)
+* If you need to add custom build settings you can use a xcconfig file, the script will add it to the project
+* Every file that is not a `.swift`, `.h`, `.m`, `.plist`, `.entitlements`, `.xcconfig` or `.storyboard` file will be added as a resource file to the project (images, fonts, etc.)
 
 #### Example
 
 * The host project is called: `My awesome app.xcodeproj` and the bundle identifier is: `com.exmaple.myawesomeapp`
 * Then the widget must be named: `My awesome app Widget`
 * The bundle identifier has to be: `com.example.myawesomeapp.widget`
-* The app-group has to be named: `group.com.example.myawesomeapp`
-* And the final folder structure in the `/www` folder should look like this:
+* [optional] The app-group has to be named: `group.com.example.myawesomeapp`
+* Example folder structure:
 
 ```plain
 project
@@ -34,7 +35,11 @@ project
 │   │   │   My awesome app Widget-Info.plist
 │   │   │   My awesome app Widget.entitlements
 │   │   │   TodayViewController.swift
-│   │   │   [optional] Bridging-Header.h
+│   │   │   AnotherSwiftFile.swift
+│   │   │   Header.h
+│   │   │   font.otf
+│   │   │   my-build-settings.xcconfig
+│   │   │   ...
 ```
 
 ### 2. Install the plugin

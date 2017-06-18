@@ -95,6 +95,9 @@ module.exports = function(context) {
       var projectContainsSwiftFiles = false;
       var addBridgingHeader = false;
       var bridgingHeaderName;
+      var addXcconfig = false;
+      var xcconfigFileName;
+      var xcconfigReference;
 
       fs.readdirSync(widgetFolder).forEach(file => {
         if (!/^\..*/.test(file)) {
@@ -117,6 +120,11 @@ module.exports = function(context) {
             // Configuration files
             case '.plist':
             case '.entitlements':
+            case '.xcconfig':
+              if (fileExtension == '.xcconfig') {
+                addXcconfig = true;
+                xcconfigFileName = file;
+              }
               configFiles.push(file);
               break;
             // Resources like storyboards, images, fonts, etc.
@@ -179,7 +187,11 @@ module.exports = function(context) {
 
       // Add files which are not part of any build phase (config)
       configFiles.forEach(configFile => {
-        pbxProject.addFile(configFile, pbxGroupKey);
+        var file = pbxProject.addFile(configFile, pbxGroupKey);
+        // We need the reference to add the xcconfig to the XCBuildConfiguration as baseConfigurationReference
+        if (path.extname(configFile) == '.xcconfig') {
+          xcconfigReference = file.fileRef;
+        }
       });
       log(
         'Successfully added ' + configFiles.length + ' configuration files!',
@@ -261,7 +273,7 @@ module.exports = function(context) {
         'info'
       );
 
-      // Add build settings to support Swift just for the widget
+      // Add build settings for Swift support, bridging header and xcconfig files
       var configurations = pbxProject.pbxXCBuildConfigurationSection();
       for (var key in configurations) {
         if (typeof configurations[key].buildSettings !== 'undefined') {
@@ -269,10 +281,16 @@ module.exports = function(context) {
           if (typeof buildSettingsObj['PRODUCT_NAME'] !== 'undefined') {
             var productName = buildSettingsObj['PRODUCT_NAME'];
             if (productName.indexOf('Widget') >= 0) {
+              if (addXcconfig) {
+                configurations[key].baseConfigurationReference =
+                  xcconfigReference + ' /* ' + xcconfigFileName + ' */';
+                log('Added xcconfig file reference to build settings!', 'info');
+              }
               if (projectContainsSwiftFiles) {
                 buildSettingsObj['SWIFT_VERSION'] = '3.0';
                 buildSettingsObj['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] =
                   'YES';
+                log('Added build settings for swift support!', 'info');
               }
               if (addBridgingHeader) {
                 buildSettingsObj['SWIFT_OBJC_BRIDGING_HEADER'] =
@@ -281,12 +299,12 @@ module.exports = function(context) {
                   '/' +
                   bridgingHeaderName +
                   '"';
+                log('Added build setting for bridging header!', 'info');
               }
             }
           }
         }
       }
-      log('Successfully added build settings for swift support!', 'info');
 
       // Write the modified project back to disc
       log('Writing the modified project back to disk ...', 'info');
