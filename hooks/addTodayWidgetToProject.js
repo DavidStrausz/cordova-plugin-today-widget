@@ -38,7 +38,7 @@ log(
   'start'
 );
 
-module.exports = function(context) {
+module.exports = function (context) {
   var Q = context.requireCordovaModule('q');
   var deferral = new Q.defer();
 
@@ -64,10 +64,10 @@ module.exports = function(context) {
     : path.join(context.opts.projectRoot, 'platforms/ios/');
   log('Folder containing your iOS project: ' + iosFolder, 'info');
 
-  fs.readdir(iosFolder, function(err, data) {
+  fs.readdir(iosFolder, function (err, data) {
     var projectFolder;
     var projectName;
-    var run = function() {
+    var run = function () {
       var pbxProject;
       var projectPath;
       projectPath = path.join(projectFolder, 'project.pbxproj');
@@ -98,6 +98,8 @@ module.exports = function(context) {
       var addXcconfig = false;
       var xcconfigFileName;
       var xcconfigReference;
+      var addEntitlementsFile = false;
+      var entitlementsFileName;
 
       fs.readdirSync(widgetFolder).forEach(file => {
         if (!/^\..*/.test(file)) {
@@ -124,6 +126,10 @@ module.exports = function(context) {
               if (fileExtension == '.xcconfig') {
                 addXcconfig = true;
                 xcconfigFileName = file;
+              }
+              if (fileExtension == '.entitlements') {
+                addEntitlementsFile = true;
+                entitlementsFileName = file;
               }
               configFiles.push(file);
               break;
@@ -169,8 +175,8 @@ module.exports = function(context) {
       if (pbxGroupKey) {
         log(
           'Successfully created empty PbxGroup for folder: ' +
-            widgetName +
-            ' with alias: Widget',
+          widgetName +
+          ' with alias: Widget',
           'info'
         );
       }
@@ -220,8 +226,8 @@ module.exports = function(context) {
 
       log(
         'Successfully added ' +
-          sourceFiles.length +
-          ' source files to PbxGroup and PBXSourcesBuildPhase!',
+        sourceFiles.length +
+        ' source files to PbxGroup and PBXSourcesBuildPhase!',
         'info'
       );
 
@@ -286,6 +292,10 @@ module.exports = function(context) {
                   xcconfigReference + ' /* ' + xcconfigFileName + ' */';
                 log('Added xcconfig file reference to build settings!', 'info');
               }
+              if (addEntitlementsFile) {
+                buildSettingsObj['CODE_SIGN_ENTITLEMENTS'] = '"' + widgetName + '/' + entitlementsFileName + '"';
+                log('Added entitlements file reference to build settings!', 'info');
+              }
               if (projectContainsSwiftFiles) {
                 buildSettingsObj['SWIFT_VERSION'] = '3.0';
                 buildSettingsObj['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] =
@@ -299,7 +309,7 @@ module.exports = function(context) {
                   '/' +
                   bridgingHeaderName +
                   '"';
-                log('Added build setting for bridging header!', 'info');
+                log('Added bridging header reference to build settings!', 'info');
               }
             }
           }
@@ -324,7 +334,7 @@ module.exports = function(context) {
 
     // Find the project folder by looking for *.xcodeproj
     if (data && data.length) {
-      data.forEach(function(folder) {
+      data.forEach(function (folder) {
         if (folder.match(/\.xcodeproj$/)) {
           projectFolder = path.join(iosFolder, folder);
           projectName = path.basename(folder, '.xcodeproj');
