@@ -32,6 +32,15 @@ function log(logString, type) {
   console.log(prefix + logString + postfix);
 }
 
+function getPreferenceValue (config, name) {
+  var value = config.match(new RegExp('name="' + name + '" value="(.*?)"', "i"));
+  if(value && value[1]) {
+    return value[1];
+  } else {
+    return null;
+  }
+}
+
 console.log('\x1b[40m');
 log(
   'Running addTargetToXcodeProject hook, patching xcode project 🦄 ',
@@ -42,18 +51,30 @@ module.exports = function (context) {
   var Q = context.requireCordovaModule('q');
   var deferral = new Q.defer();
 
+
+
   if (context.opts.cordova.platforms.indexOf('ios') < 0) {
     log('You have to add the ios platform before adding this plugin!', 'error');
   }
 
-  // Get the bundle-id from config.xml
   var contents = fs.readFileSync(
     path.join(context.opts.projectRoot, 'config.xml'),
     'utf-8'
   );
+
+  var WIDGET_NAME;
+  // Get the widget name from the parameters or the config file
+  if(process.argv.join("|").indexOf("WIDGET_NAME=") > -1) {
+    WIDGET_NAME = process.argv.join("|").match(/WIDGET_NAME=(.*?)(\||$)/)[1];
+  } else {
+    WIDGET_NAME = getPreferenceValue(contents, "WIDGET_NAME");
+  }
+
   if (contents) {
     contents = contents.substring(contents.indexOf('<'));
   }
+
+  // Get the bundle-id from config.xml
   var elementTree = context.requireCordovaModule('elementtree');
   var etree = elementTree.parse(contents);
   var bundleId = etree.getroot().get('id');
@@ -85,7 +106,7 @@ module.exports = function (context) {
         pbxProject.parseSync();
       }
 
-      var widgetName = projectName + ' Widget';
+      var widgetName = WIDGET_NAME || projectName + ' Widget';
       log('Your widget will be named: ' + widgetName, 'info');
 
       var widgetFolder = path.join(iosFolder, widgetName);

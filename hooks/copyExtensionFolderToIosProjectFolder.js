@@ -31,6 +31,15 @@ function log(logString, type) {
   console.log(prefix + logString + postfix);
 }
 
+function getPreferenceValue (config, name) {
+  var value = config.match(new RegExp('name="' + name + '" value="(.*?)"', "i"));
+  if(value && value[1]) {
+    return value[1];
+  } else {
+    return null;
+  }
+}
+
 console.log('\x1b[40m');
 log(
   'Running copyExtensionFolderToIosProject hook, copying widget folder ...',
@@ -77,6 +86,26 @@ module.exports = function(context) {
   var Q = context.requireCordovaModule('q');
   var deferral = new Q.defer();
 
+  var contents = fs.readFileSync(
+    path.join(context.opts.projectRoot, 'config.xml'),
+    'utf-8'
+  );
+
+  var WIDGET_NAME;
+  var WIDGET_PATH;
+  // Get the widget name and location from the parameters or the config file
+  if(process.argv.join("|").indexOf("WIDGET_NAME=") > -1) {
+    WIDGET_NAME = process.argv.join("|").match(/WIDGET_NAME=(.*?)(\||$)/)[1];
+  } else {
+    WIDGET_NAME = getPreferenceValue(contents, "WIDGET_NAME");
+  }
+  if(process.argv.join("|").indexOf("WIDGET_PATH=") > -1) {
+    WIDGET_PATH = process.argv.join("|").match(/WIDGET_PATH=(.*?)(\||$)/)[1];
+  } else {
+    WIDGET_PATH = getPreferenceValue(contents, "WIDGET_PATH");
+  }
+  var widgetName = WIDGET_NAME || projectName + ' Widget';
+
   var iosFolder = context.opts.cordova.project
     ? context.opts.cordova.project.root
     : path.join(context.opts.projectRoot, 'platforms/ios/');
@@ -97,14 +126,23 @@ module.exports = function(context) {
     if (!projectFolder || !projectName) {
       log('Could not find an .xcodeproj folder in: ' + iosFolder, 'error');
     }
-    srcFolder = path.join(
-      context.opts.projectRoot,
-      'www',
-      projectName + ' Widget/'
-    );
+
+    if (WIDGET_PATH) {
+        srcFolder = path.join(
+          context.opts.projectRoot,
+          WIDGET_PATH,
+          widgetName + '/'
+        );
+    } else {
+        srcFolder = path.join(
+          context.opts.projectRoot,
+          'www',
+          widgetName + '/'
+        );
+    }
     if (!fs.existsSync(srcFolder)) {
       log(
-        'Missing widget folder in www folder. Should be named "<PROJECTNAME> Widget"',
+        'Missing widget folder in ' + srcFolder + '. Should have the same name as your widget: ' + widgetName,
         'error'
       );
     }
