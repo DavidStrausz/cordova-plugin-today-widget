@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var plist = require('plist');
 
 function log(logString, type) {
   var prefix;
@@ -40,6 +41,16 @@ function getPreferenceValue (config, name) {
   }
 }
 
+function replacePlaceholdersInPlist(plistPath, placeHolderValues) {
+    var plistContents = fs.readFileSync(plistPath, 'utf8');
+    for (var i = 0; i < placeHolderValues.length; i++) {
+        var placeHolderValue = placeHolderValues[i],
+            regexp = new RegExp(placeHolderValue.placeHolder, "g");
+        plistContents = plistContents.replace(regexp, placeHolderValue.value);
+    }
+    fs.writeFileSync(plistPath, plistContents);
+}
+
 console.log('\x1b[40m');
 log(
   'Running addTargetToXcodeProject hook, patching xcode project 🦄 ',
@@ -68,6 +79,14 @@ module.exports = function (context) {
     WIDGET_NAME = process.argv.join("|").match(/WIDGET_NAME=(.*?)(\||$)/)[1];
   } else {
     WIDGET_NAME = getPreferenceValue(contents, "WIDGET_NAME");
+  }
+
+  var WIDGET_BUNDLE_SUFFIX;
+  // Get the widget name from the parameters or the config file
+  if(process.argv.join("|").indexOf("WIDGET_BUNDLE_SUFFIX=") > -1) {
+    WIDGET_BUNDLE_SUFFIX = process.argv.join("|").match(/WIDGET_BUNDLE_SUFFIX=(.*?)(\||$)/)[1];
+  } else {
+    WIDGET_BUNDLE_SUFFIX = getPreferenceValue(contents, "WIDGET_BUNDLE_SUFFIX");
   }
 
   if (contents) {
@@ -109,6 +128,9 @@ module.exports = function (context) {
       var widgetName = WIDGET_NAME || projectName + ' Widget';
       log('Your widget will be named: ' + widgetName, 'info');
 
+      var widgetBundleId = WIDGET_BUNDLE_SUFFIX || 'widget';
+      log('Your widget bundle if will be: ' + widgetBundleId, 'info');
+
       var widgetFolder = path.join(iosFolder, widgetName);
       var sourceFiles = [];
       var resourceFiles = [];
@@ -121,6 +143,30 @@ module.exports = function (context) {
       var xcconfigReference;
       var addEntitlementsFile = false;
       var entitlementsFileName;
+      var projectPlistPath = path.join(iosFolder, projectName, projectName + '-Info.plist');
+      var projectPlistJson = plist.parse(fs.readFileSync(projectPlistPath, 'utf8'));
+      var placeHolderValues = [
+        {
+          placeHolder: '__DISPLAY_NAME__',
+          value: widgetName
+        },
+        {
+          placeHolder: '__APP_IDENTIFIER__',
+          value: projectPlistJson['CFBundleIdentifier']
+        },
+        {
+          placeHolder: '__BUNDLE_SUFFIX__',
+          value: widgetBundleId
+        },
+        {
+          placeHolder: '__BUNDLE_SHORT_VERSION_STRING__',
+          value: projectPlistJson['CFBundleShortVersionString']
+        },
+        {
+          placeHolder: '__BUNDLE_VERSION__',
+          value: projectPlistJson['CFBundleVersion']
+        }
+      ];
 
       fs.readdirSync(widgetFolder).forEach(file => {
         if (!/^\..*/.test(file)) {
@@ -144,11 +190,14 @@ module.exports = function (context) {
             case '.plist':
             case '.entitlements':
             case '.xcconfig':
-              if (fileExtension == '.xcconfig') {
+              if (fileExtension === '.plist') {
+                replacePlaceholdersInPlist(path.join(widgetFolder, file), placeHolderValues);
+              }
+              if (fileExtension === '.xcconfig') {
                 addXcconfig = true;
                 xcconfigFileName = file;
               }
-              if (fileExtension == '.entitlements') {
+              if (fileExtension === '.entitlements') {
                 addEntitlementsFile = true;
                 entitlementsFileName = file;
               }
