@@ -367,7 +367,7 @@ module.exports = function (context) {
               if (projectContainsSwiftFiles) {
                 buildSettingsObj['SWIFT_VERSION'] = '3.0';
                 buildSettingsObj['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] =
-                  'YES';
+                  'NO';
                 log('Added build settings for swift support!', 'info');
               }
               if (addBridgingHeader) {
