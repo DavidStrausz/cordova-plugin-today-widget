@@ -17,6 +17,7 @@
   <platform name="ios">
     <config-file target="config.xml" parent="/*"></config-file>
 
+    <hook type="after_platform_add" src="hooks/prerequisites.js"/>
     <hook type="after_platform_add" src="hooks/copyExtensionFolderToIosProjectFolder.js"/>
     <hook type="after_platform_add" src="hooks/addTodayWidgetToProject.js"/>
   </platform>
