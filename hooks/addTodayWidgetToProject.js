@@ -384,13 +384,6 @@ module.exports = function (context) {
         }
       }
 
-      // Update app entitlements
-      ['Debug', 'Release'].forEach(config => {
-        var entitlementsPath = path.join(iosFolder, projectName, 'Entitlements-' + config + '.plist');
-        replacePlaceholdersInPlist(entitlementsPath, placeHolderValues);
-      });
-      log('Successfully added app group information to the app entitlement files!', 'info');
-
       // Write the modified project back to disc
       log('Writing the modified project back to disk ...', 'info');
       fs.writeFileSync(projectPath, pbxProject.writeSync());
