@@ -51,6 +51,17 @@ function replacePlaceholdersInPlist(plistPath, placeHolderValues) {
     fs.writeFileSync(plistPath, plistContents);
 }
 
+function getCordovaParameter(variableName, contents) {
+  var variable;
+  if(process.argv.join("|").indexOf(variableName + "=") > -1) {
+    var re = new RegExp(variableName + '=(.*?)(\||$))', 'g');
+    variable = process.argv.join("|").match(re)[1];
+  } else {
+    variable = getPreferenceValue(contents, variableName);
+  }
+  return variable;
+}
+
 console.log('\x1b[40m');
 log(
   'Running addTargetToXcodeProject hook, patching xcode project 🦄 ',
@@ -62,8 +73,6 @@ module.exports = function (context) {
   var Q = context.requireCordovaModule('q');
   var deferral = new Q.defer();
 
-
-
   if (context.opts.cordova.platforms.indexOf('ios') < 0) {
     log('You have to add the ios platform before adding this plugin!', 'error');
   }
@@ -73,21 +82,9 @@ module.exports = function (context) {
     'utf-8'
   );
 
-  var WIDGET_NAME;
-  // Get the widget name from the parameters or the config file
-  if(process.argv.join("|").indexOf("WIDGET_NAME=") > -1) {
-    WIDGET_NAME = process.argv.join("|").match(/WIDGET_NAME=(.*?)(\||$)/)[1];
-  } else {
-    WIDGET_NAME = getPreferenceValue(contents, "WIDGET_NAME");
-  }
-
-  var WIDGET_BUNDLE_SUFFIX;
-  // Get the widget name from the parameters or the config file
-  if(process.argv.join("|").indexOf("WIDGET_BUNDLE_SUFFIX=") > -1) {
-    WIDGET_BUNDLE_SUFFIX = process.argv.join("|").match(/WIDGET_BUNDLE_SUFFIX=(.*?)(\||$)/)[1];
-  } else {
-    WIDGET_BUNDLE_SUFFIX = getPreferenceValue(contents, "WIDGET_BUNDLE_SUFFIX");
-  }
+  // Get the plugin variables from the parameters or the config file
+  var WIDGET_NAME = getCordovaParameter("WIDGET_NAME", contents);
+  var WIDGET_BUNDLE_SUFFIX = getCordovaParameter("WIDGET_BUNDLE_SUFFIX", contents);
 
   if (contents) {
     contents = contents.substring(contents.indexOf('<'));
@@ -129,7 +126,7 @@ module.exports = function (context) {
       log('Your widget will be named: ' + widgetName, 'info');
 
       var widgetBundleId = WIDGET_BUNDLE_SUFFIX || 'widget';
-      log('Your widget bundle if will be: ' + widgetBundleId, 'info');
+      log('Your widget bundle id will be: ' + bundleId + '.' + widgetBundleId, 'info');
 
       var widgetFolder = path.join(iosFolder, widgetName);
       var sourceFiles = [];
@@ -198,6 +195,7 @@ module.exports = function (context) {
                 xcconfigFileName = file;
               }
               if (fileExtension === '.entitlements') {
+                replacePlaceholdersInPlist(path.join(widgetFolder, file), placeHolderValues);
                 addEntitlementsFile = true;
                 entitlementsFileName = file;
               }
@@ -385,6 +383,13 @@ module.exports = function (context) {
           }
         }
       }
+
+      // Update app entitlements
+      ['Debug', 'Release'].forEach(config => {
+        var entitlementsPath = path.join(iosFolder, projectName, 'Entitlements-' + config + '.plist');
+        replacePlaceholdersInPlist(entitlementsPath, placeHolderValues);
+      });
+      log('Successfully added app group information to the app entitlement files!', 'info');
 
       // Write the modified project back to disc
       log('Writing the modified project back to disk ...', 'info');

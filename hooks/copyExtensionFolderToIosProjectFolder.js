@@ -82,6 +82,17 @@ var copyFolderRecursiveSync = function(source, target) {
   }
 };
 
+function getCordovaParameter(variableName, contents) {
+  var variable;
+  if(process.argv.join("|").indexOf(variableName + "=") > -1) {
+    var re = new RegExp(variableName + '=(.*?)(\||$))', 'g');
+    variable = process.argv.join("|").match(re)[1];
+  } else {
+    variable = getPreferenceValue(contents, variableName);
+  }
+  return variable;
+}
+
 module.exports = function(context) {
   var Q = context.requireCordovaModule('q');
   var deferral = new Q.defer();
@@ -90,21 +101,6 @@ module.exports = function(context) {
     path.join(context.opts.projectRoot, 'config.xml'),
     'utf-8'
   );
-
-  var WIDGET_NAME;
-  var WIDGET_PATH;
-  // Get the widget name and location from the parameters or the config file
-  if(process.argv.join("|").indexOf("WIDGET_NAME=") > -1) {
-    WIDGET_NAME = process.argv.join("|").match(/WIDGET_NAME=(.*?)(\||$)/)[1];
-  } else {
-    WIDGET_NAME = getPreferenceValue(contents, "WIDGET_NAME");
-  }
-  if(process.argv.join("|").indexOf("WIDGET_PATH=") > -1) {
-    WIDGET_PATH = process.argv.join("|").match(/WIDGET_PATH=(.*?)(\||$)/)[1];
-  } else {
-    WIDGET_PATH = getPreferenceValue(contents, "WIDGET_PATH");
-  }
-  var widgetName = WIDGET_NAME || projectName + ' Widget';
 
   var iosFolder = context.opts.cordova.project
     ? context.opts.cordova.project.root
@@ -126,6 +122,11 @@ module.exports = function(context) {
     if (!projectFolder || !projectName) {
       log('Could not find an .xcodeproj folder in: ' + iosFolder, 'error');
     }
+
+    // Get the widget name and location from the parameters or the config file
+    var WIDGET_NAME = getCordovaParameter("WIDGET_NAME", contents);
+    var WIDGET_PATH = getCordovaParameter("WIDGET_PATH", contents);
+    var widgetName = WIDGET_NAME || projectName + ' Widget';
 
     if (WIDGET_PATH) {
         srcFolder = path.join(
