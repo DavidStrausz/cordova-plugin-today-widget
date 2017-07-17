@@ -85,6 +85,7 @@ module.exports = function (context) {
   // Get the plugin variables from the parameters or the config file
   var WIDGET_NAME = getCordovaParameter("WIDGET_NAME", contents);
   var WIDGET_BUNDLE_SUFFIX = getCordovaParameter("WIDGET_BUNDLE_SUFFIX", contents);
+  var ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = getCordovaParameter("ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", contents);
 
   if (contents) {
     contents = contents.substring(contents.indexOf('<'));
@@ -366,8 +367,7 @@ module.exports = function (context) {
               }
               if (projectContainsSwiftFiles) {
                 buildSettingsObj['SWIFT_VERSION'] = '3.0';
-                buildSettingsObj['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] =
-                  'NO';
+                buildSettingsObj['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES || 'YES';
                 log('Added build settings for swift support!', 'info');
               }
               if (addBridgingHeader) {
