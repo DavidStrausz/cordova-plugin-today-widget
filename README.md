@@ -24,17 +24,27 @@ This plugin extends your existing xcode project by parsing and modifying the pro
 
 | Variable | Default | Description |
 |-|-|-|
-|WIDGET_PATH| `/www` | Path to the folder that contains your widget folder |
+|WIDGET_PATH| `/www` | Path to the folder that contains your widget folder relative to the project root |
 |WIDGET_NAME| <Name of main project> Widget | Name of your widget |
 |WIDGET_BUNDLE_SUFFIX| widget | The last part of the widget bundle id |
 |ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES| YES | You might have to turn this off if you use other swift based plugins (such as cordova-plugin-geofence) |
 
+This can be done either manually in the config.xml after installing the plugin, or be done through the CLI.
+
 #### Example:
+
+In the config.xml
 
 ```
 <plugin name="cordova-plugin-today-widget" spec="https://github.com/Triggi/cordova-plugin-today-widget.git">
   <variable name="WIDGET_NAME" value="NowWidget" />
 </plugin>
+```
+
+Directly through CLI:
+
+```
+cordova plugin add cordova-plugin-today-widget --variable WIDGET_NAME="NowWidget" --variable WIDGET_BUNDLE_SUFFIX="widget"
 ```
 
 ### 3. Parametrization
