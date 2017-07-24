@@ -1,8 +1,8 @@
 // @ts-check
 
-var xcode = require('xcode');
 var fs = require('fs');
 var path = require('path');
+var plist = require('plist');
 
 function log(logString, type) {
   var prefix;
@@ -32,6 +32,36 @@ function log(logString, type) {
   console.log(prefix + logString + postfix);
 }
 
+function getPreferenceValue (config, name) {
+  var value = config.match(new RegExp('name="' + name + '" value="(.*?)"', "i"));
+  if(value && value[1]) {
+    return value[1];
+  } else {
+    return null;
+  }
+}
+
+function replacePlaceholdersInPlist(plistPath, placeHolderValues) {
+    var plistContents = fs.readFileSync(plistPath, 'utf8');
+    for (var i = 0; i < placeHolderValues.length; i++) {
+        var placeHolderValue = placeHolderValues[i],
+            regexp = new RegExp(placeHolderValue.placeHolder, "g");
+        plistContents = plistContents.replace(regexp, placeHolderValue.value);
+    }
+    fs.writeFileSync(plistPath, plistContents);
+}
+
+function getCordovaParameter(variableName, contents) {
+  var variable;
+  if(process.argv.join("|").indexOf(variableName + "=") > -1) {
+    var re = new RegExp(variableName + '=(.*?)(\||$))', 'g');
+    variable = process.argv.join("|").match(re)[1];
+  } else {
+    variable = getPreferenceValue(contents, variableName);
+  }
+  return variable;
+}
+
 console.log('\x1b[40m');
 log(
   'Running addTargetToXcodeProject hook, patching xcode project 🦄 ',
@@ -39,6 +69,7 @@ log(
 );
 
 module.exports = function (context) {
+  var xcode = context.requireCordovaModule('xcode');
   var Q = context.requireCordovaModule('q');
   var deferral = new Q.defer();
 
@@ -46,14 +77,21 @@ module.exports = function (context) {
     log('You have to add the ios platform before adding this plugin!', 'error');
   }
 
-  // Get the bundle-id from config.xml
   var contents = fs.readFileSync(
     path.join(context.opts.projectRoot, 'config.xml'),
     'utf-8'
   );
+
+  // Get the plugin variables from the parameters or the config file
+  var WIDGET_NAME = getCordovaParameter("WIDGET_NAME", contents);
+  var WIDGET_BUNDLE_SUFFIX = getCordovaParameter("WIDGET_BUNDLE_SUFFIX", contents);
+  var ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = getCordovaParameter("ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", contents);
+
   if (contents) {
     contents = contents.substring(contents.indexOf('<'));
   }
+
+  // Get the bundle-id from config.xml
   var elementTree = context.requireCordovaModule('elementtree');
   var etree = elementTree.parse(contents);
   var bundleId = etree.getroot().get('id');
@@ -85,8 +123,11 @@ module.exports = function (context) {
         pbxProject.parseSync();
       }
 
-      var widgetName = projectName + ' Widget';
+      var widgetName = WIDGET_NAME || projectName + ' Widget';
       log('Your widget will be named: ' + widgetName, 'info');
+
+      var widgetBundleId = WIDGET_BUNDLE_SUFFIX || 'widget';
+      log('Your widget bundle id will be: ' + bundleId + '.' + widgetBundleId, 'info');
 
       var widgetFolder = path.join(iosFolder, widgetName);
       var sourceFiles = [];
@@ -100,6 +141,30 @@ module.exports = function (context) {
       var xcconfigReference;
       var addEntitlementsFile = false;
       var entitlementsFileName;
+      var projectPlistPath = path.join(iosFolder, projectName, projectName + '-Info.plist');
+      var projectPlistJson = plist.parse(fs.readFileSync(projectPlistPath, 'utf8'));
+      var placeHolderValues = [
+        {
+          placeHolder: '__DISPLAY_NAME__',
+          value: projectPlistJson['CFBundleDisplayName']
+        },
+        {
+          placeHolder: '__APP_IDENTIFIER__',
+          value: projectPlistJson['CFBundleIdentifier']
+        },
+        {
+          placeHolder: '__BUNDLE_SUFFIX__',
+          value: widgetBundleId
+        },
+        {
+          placeHolder: '__BUNDLE_SHORT_VERSION_STRING__',
+          value: projectPlistJson['CFBundleShortVersionString']
+        },
+        {
+          placeHolder: '__BUNDLE_VERSION__',
+          value: projectPlistJson['CFBundleVersion']
+        }
+      ];
 
       fs.readdirSync(widgetFolder).forEach(file => {
         if (!/^\..*/.test(file)) {
@@ -123,11 +188,15 @@ module.exports = function (context) {
             case '.plist':
             case '.entitlements':
             case '.xcconfig':
-              if (fileExtension == '.xcconfig') {
+              if (fileExtension === '.plist') {
+                replacePlaceholdersInPlist(path.join(widgetFolder, file), placeHolderValues);
+              }
+              if (fileExtension === '.xcconfig') {
                 addXcconfig = true;
                 xcconfigFileName = file;
               }
-              if (fileExtension == '.entitlements') {
+              if (fileExtension === '.entitlements') {
+                replacePlaceholdersInPlist(path.join(widgetFolder, file), placeHolderValues);
                 addEntitlementsFile = true;
                 entitlementsFileName = file;
               }
@@ -298,8 +367,7 @@ module.exports = function (context) {
               }
               if (projectContainsSwiftFiles) {
                 buildSettingsObj['SWIFT_VERSION'] = '3.0';
-                buildSettingsObj['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] =
-                  'YES';
+                buildSettingsObj['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES || 'YES';
                 log('Added build settings for swift support!', 'info');
               }
               if (addBridgingHeader) {

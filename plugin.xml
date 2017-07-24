@@ -7,7 +7,7 @@
   <author>David Strauß</author>
 
   <description>
-    Add a toaday widget app extension target to your cordova project.
+    Add a today widget app extension target to your cordova project.
   </description>
 
   <engines>
@@ -17,7 +17,20 @@
   <platform name="ios">
     <config-file target="config.xml" parent="/*"></config-file>
 
+    <config-file parent="com.apple.security.application-groups" target="*-Debug.plist">
+      <array>
+        <string>group.__APP_IDENTIFIER__</string>
+      </array>
+    </config-file>
+    <config-file parent="com.apple.security.application-groups" target="*-Release.plist">
+      <array>
+        <string>group.__APP_IDENTIFIER__</string>
+      </array>
+    </config-file>
+
+    <hook type="after_platform_add" src="hooks/prerequisites.js"/>
     <hook type="after_platform_add" src="hooks/copyExtensionFolderToIosProjectFolder.js"/>
     <hook type="after_platform_add" src="hooks/addTodayWidgetToProject.js"/>
+    <hook type="after_prepare" src="hooks/fixAppEntitlements.js"/>
   </platform>
 </plugin>
