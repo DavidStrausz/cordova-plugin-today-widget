@@ -26,19 +26,5 @@
     "path": "^0.12.7",
     "plist": "^2.1.0",
     "xcode": "git+https://github.com/apache/cordova-node-xcode.git"
-  },
-  "devDependencies": {
-    "husky": "^0.13.4",
-    "lint-staged": "^3.6.0",
-    "prettier": "^1.4.2"
-  },
-  "scripts": {
-    "precommit": "lint-staged"
-  },
-  "lint-staged": {
-    "*.js": [
-      "prettier --parser javascript --single-quote --print-width 80 --tab-width 2 --trailing-comma es5 --list-different --write",
-      "git add"
-    ]
   }
 }
