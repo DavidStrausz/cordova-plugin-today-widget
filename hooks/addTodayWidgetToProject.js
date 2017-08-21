@@ -146,7 +146,7 @@ module.exports = function (context) {
       var placeHolderValues = [
         {
           placeHolder: '__DISPLAY_NAME__',
-          value: projectPlistJson['CFBundleDisplayName']
+          value: projectName
         },
         {
           placeHolder: '__APP_IDENTIFIER__',
