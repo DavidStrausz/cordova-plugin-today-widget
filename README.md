@@ -53,11 +53,11 @@ Especially for automated builds, parametrization is an important part. The follo
 
 | Variable | Example | Description |
 |-|-|-|
-|\__DISPLAY_NAME__| AppName | Name of the original app |
-|\__APP_IDENTIFIER__| com.company.app | Bundle ID of the main app |
-|\__BUNDLE_SUFFIX__| widget | Bundle ID suffix for the widget |
-|\__BUNDLE_SHORT_VERSION_STRING__| 1.0.0 | The version of the main app in form MAJOR.MINOR.PATCH |
-|\__BUNDLE_VERSION__| 1234 | The build number of the main app
+|\_\_DISPLAY_NAME__| AppName | Name of the original app |
+|\_\_APP_IDENTIFIER__| com.company.app | Bundle ID of the main app |
+|\_\_BUNDLE_SUFFIX__| widget | Bundle ID suffix for the widget |
+|\_\_BUNDLE_SHORT_VERSION_STRING__| 1.0.0 | The version of the main app in form MAJOR.MINOR.PATCH |
+|\_\_BUNDLE_VERSION__| 1234 | The build number of the main app
 
 These parameters are available in available in any `.plist` or `.entitlements` files.
 
@@ -65,13 +65,13 @@ These parameters are available in available in any `.plist` or `.entitlements` f
 To keep the app and widget in sync use the following settings
 
 `Widget-Info.plist`:
-* Bundle display name: \__DISPLAY_NAME__
-* Bundle identifier: \_\_APP\_IDENTIFIER\_\_.\_\_BUNDLE\_SUFFIX\_\_
-* Bundle version string, short: \__BUNDLE_SHORT_VERSION_STRING__
-* Bundle version: \__BUNDLE_VERSION__
+* Bundle display name: \_\_DISPLAY_NAME__
+* Bundle identifier: \_\_APP\_IDENTIFIER__.\_\_BUNDLE\_SUFFIX__
+* Bundle version string, short: \_\_BUNDLE_SHORT_VERSION_STRING__
+* Bundle version: \_\_BUNDLE_VERSION__
 
 `Widget.entitlements`:
-* App Groups -> Item 0: group.\__APP_IDENTIFIER__
+* App Groups -> Item 0: group.\_\_APP_IDENTIFIER__
 
 ### Infos
 * I only tested the plugin with cordova 7.0.1 and cordova-ios 4.4.0 up to now, but it should work with other versions too.
