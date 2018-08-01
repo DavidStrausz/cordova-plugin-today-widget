@@ -29,14 +29,22 @@
     </config-file>
   	<config-file parent="com.apple.developer.associated-domains" target="*-Debug.plist">
   		<array>
-  			<string>applinks:triggi.com</string>
+  			<string>applinks:share.triggi.com</string>
+  			<string>applinks:share-dev.triggi.com</string>
   			<string>applinks:triggi.onelink.me</string>
+  			<string>applinks:share.olisto.com</string>
+  			<string>applinks:share-dev.olisto.com</string>
+  			<string>applinks:olisto.onelink.me</string>
   		</array>
   	</config-file>
   	<config-file parent="com.apple.developer.associated-domains" target="*-Release.plist">
   		<array>
-  			<string>applinks:triggi.com</string>
+  			<string>applinks:share.triggi.com</string>
+  			<string>applinks:share-dev.triggi.com</string>
   			<string>applinks:triggi.onelink.me</string>
+  			<string>applinks:share.olisto.com</string>
+  			<string>applinks:share-dev.olisto.com</string>
+  			<string>applinks:olisto.onelink.me</string>
   		</array>
   	</config-file>
     <hook type="after_platform_add" src="hooks/prerequisites.js"/>
