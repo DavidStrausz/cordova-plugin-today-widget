@@ -5,6 +5,7 @@ var path = require('path');
 var plist = require('plist');
 var xcode = require('xcode');
 var Q = require('q');
+var elementTree = require('elementtree');
 
 function log(logString, type) {
   var prefix;
@@ -92,7 +93,6 @@ module.exports = function (context) {
   }
 
   // Get the bundle-id from config.xml
-  var elementTree = context.requireCordovaModule('elementtree');
   var etree = elementTree.parse(contents);
   var bundleId = etree.getroot().get('id');
   log('Bundle id of your host app: ' + bundleId, 'info');
