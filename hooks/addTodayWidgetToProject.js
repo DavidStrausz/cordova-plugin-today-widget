@@ -4,6 +4,7 @@ var fs = require('fs');
 var path = require('path');
 var plist = require('plist');
 var xcode = require('xcode');
+var Q = require('q');
 
 function log(logString, type) {
   var prefix;
@@ -70,7 +71,6 @@ log(
 );
 
 module.exports = function (context) {
-  var Q = context.requireCordovaModule('q');
   var deferral = new Q.defer();
 
   if (context.opts.cordova.platforms.indexOf('ios') < 0) {
