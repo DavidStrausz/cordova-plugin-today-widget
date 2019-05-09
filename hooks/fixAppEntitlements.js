@@ -2,7 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
-var plist = require('plist');
+var xcode = require('xcode');
 
 function log(logString, type) {
   var prefix;
@@ -57,7 +57,6 @@ log(
 );
 
 module.exports = function (context) {
-  var xcode = context.requireCordovaModule('xcode');
   var Q = context.requireCordovaModule('q');
   var deferral = new Q.defer();
 
