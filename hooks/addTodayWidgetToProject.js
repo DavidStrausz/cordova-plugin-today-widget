@@ -188,15 +188,12 @@ module.exports = function (context) {
             case '.plist':
             case '.entitlements':
             case '.xcconfig':
-              if (fileExtension === '.plist') {
-                replacePlaceholdersInPlist(path.join(widgetFolder, file), placeHolderValues);
-              }
+              replacePlaceholdersInPlist(path.join(widgetFolder, file), placeHolderValues);
               if (fileExtension === '.xcconfig') {
                 addXcconfig = true;
                 xcconfigFileName = file;
               }
               if (fileExtension === '.entitlements') {
-                replacePlaceholdersInPlist(path.join(widgetFolder, file), placeHolderValues);
                 addEntitlementsFile = true;
                 entitlementsFileName = file;
               }
