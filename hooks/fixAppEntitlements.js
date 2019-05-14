@@ -2,7 +2,9 @@
 
 var fs = require('fs');
 var path = require('path');
-var plist = require('plist');
+var xcode = require('xcode');
+var Q = require('q');
+var elementTree = require('elementtree');
 
 function log(logString, type) {
   var prefix;
@@ -57,8 +59,6 @@ log(
 );
 
 module.exports = function (context) {
-  var xcode = context.requireCordovaModule('xcode');
-  var Q = context.requireCordovaModule('q');
   var deferral = new Q.defer();
 
   if (context.opts.cordova.platforms.indexOf('ios') < 0) {
@@ -75,7 +75,6 @@ module.exports = function (context) {
   }
 
   // Get the bundle-id from config.xml
-  var elementTree = context.requireCordovaModule('elementtree');
   var etree = elementTree.parse(contents);
   var bundleId = etree.getroot().get('id');
 
@@ -84,7 +83,7 @@ module.exports = function (context) {
     : path.join(context.opts.projectRoot, 'platforms/ios/');
 
   fs.readdir(iosFolder, function (err, data) {
-    var projectFolder
+    var projectFolder;
     var projectName;
     var run = function () {
       var placeHolderValues = [

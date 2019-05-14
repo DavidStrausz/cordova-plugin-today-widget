@@ -3,6 +3,9 @@
 var fs = require('fs');
 var path = require('path');
 var plist = require('plist');
+var xcode = require('xcode');
+var Q = require('q');
+var elementTree = require('elementtree');
 
 function log(logString, type) {
   var prefix;
@@ -69,8 +72,6 @@ log(
 );
 
 module.exports = function (context) {
-  var xcode = context.requireCordovaModule('xcode');
-  var Q = context.requireCordovaModule('q');
   var deferral = new Q.defer();
 
   if (context.opts.cordova.platforms.indexOf('ios') < 0) {
@@ -92,7 +93,6 @@ module.exports = function (context) {
   }
 
   // Get the bundle-id from config.xml
-  var elementTree = context.requireCordovaModule('elementtree');
   var etree = elementTree.parse(contents);
   var bundleId = etree.getroot().get('id');
   log('Bundle id of your host app: ' + bundleId, 'info');
@@ -150,7 +150,7 @@ module.exports = function (context) {
         },
         {
           placeHolder: '__APP_IDENTIFIER__',
-          value: projectPlistJson['CFBundleIdentifier']
+          value: bundleId
         },
         {
           placeHolder: '__BUNDLE_SUFFIX__',
@@ -188,15 +188,12 @@ module.exports = function (context) {
             case '.plist':
             case '.entitlements':
             case '.xcconfig':
-              if (fileExtension === '.plist') {
-                replacePlaceholdersInPlist(path.join(widgetFolder, file), placeHolderValues);
-              }
+              replacePlaceholdersInPlist(path.join(widgetFolder, file), placeHolderValues);
               if (fileExtension === '.xcconfig') {
                 addXcconfig = true;
                 xcconfigFileName = file;
               }
               if (fileExtension === '.entitlements') {
-                replacePlaceholdersInPlist(path.join(widgetFolder, file), placeHolderValues);
                 addEntitlementsFile = true;
                 entitlementsFileName = file;
               }
@@ -366,7 +363,7 @@ module.exports = function (context) {
                 log('Added entitlements file reference to build settings!', 'info');
               }
               if (projectContainsSwiftFiles) {
-                buildSettingsObj['SWIFT_VERSION'] = '3.0';
+                buildSettingsObj['SWIFT_VERSION'] = '4.2';
                 buildSettingsObj['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES || 'YES';
                 log('Added build settings for swift support!', 'info');
               }
