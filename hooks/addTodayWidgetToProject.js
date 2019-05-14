@@ -150,7 +150,7 @@ module.exports = function (context) {
         },
         {
           placeHolder: '__APP_IDENTIFIER__',
-          value: projectPlistJson['CFBundleIdentifier']
+          value: bundleId
         },
         {
           placeHolder: '__BUNDLE_SUFFIX__',

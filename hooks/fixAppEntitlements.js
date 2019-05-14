@@ -83,7 +83,7 @@ module.exports = function (context) {
     : path.join(context.opts.projectRoot, 'platforms/ios/');
 
   fs.readdir(iosFolder, function (err, data) {
-    var projectFolder
+    var projectFolder;
     var projectName;
     var run = function () {
       var placeHolderValues = [
