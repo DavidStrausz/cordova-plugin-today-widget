@@ -2,6 +2,7 @@
 
 var fs = require('fs');
 var path = require('path');
+var Q = require('q');
 
 function log(logString, type) {
   var prefix;
@@ -94,7 +95,6 @@ function getCordovaParameter(variableName, contents) {
 }
 
 module.exports = function(context) {
-  var Q = context.requireCordovaModule('q');
   var deferral = new Q.defer();
 
   var contents = fs.readFileSync(

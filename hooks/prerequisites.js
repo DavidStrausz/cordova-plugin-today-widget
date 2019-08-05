@@ -1,8 +1,10 @@
-module.exports = function (context) {
-	var child_process = context.requireCordovaModule('child_process'),
-         deferral = context.requireCordovaModule('q').defer();
+var child_process = require('child_process');
+var Q = require('q');
 
-child_process.exec('npm install', {cwd:__dirname},
+module.exports = function (context) {
+	var deferral = Q.defer();
+
+	child_process.exec('npm install', {cwd:__dirname},
 		function (error) {
 			if (error !== null) {
 			  console.log('exec error: ' + error);

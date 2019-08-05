@@ -1,8 +1,11 @@
 // @ts-check
 
+var elementTree = require('elementtree');
 var fs = require('fs');
 var path = require('path');
 var plist = require('plist');
+var Q = require('q');
+var xcode = require('xcode');
 
 function log(logString, type) {
   var prefix;
@@ -57,8 +60,6 @@ log(
 );
 
 module.exports = function (context) {
-  var xcode = context.requireCordovaModule('xcode');
-  var Q = context.requireCordovaModule('q');
   var deferral = new Q.defer();
 
   if (context.opts.cordova.platforms.indexOf('ios') < 0) {
@@ -75,7 +76,6 @@ module.exports = function (context) {
   }
 
   // Get the bundle-id from config.xml
-  var elementTree = context.requireCordovaModule('elementtree');
   var etree = elementTree.parse(contents);
   var bundleId = etree.getroot().get('id');
 
