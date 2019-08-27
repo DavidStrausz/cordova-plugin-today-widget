@@ -212,7 +212,7 @@ module.exports = function (context) {
       }
 
       dependencies.forEach(file => {
-        handleFile(path.join(iosFolder, projectName, file.trim()));
+        handleFile(file.trim());
       });
 
       fs.readdirSync(widgetFolder).forEach(file => {
