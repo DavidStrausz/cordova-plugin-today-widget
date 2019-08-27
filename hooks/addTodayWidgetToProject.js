@@ -169,7 +169,7 @@ module.exports = function (context) {
       ];
 
       var folders = [widgetFolder];
-      if (dependencyPath) {
+      if (DEPENDENCY_PATH) {
         folders.push(dependencyFolder);
       }
 
