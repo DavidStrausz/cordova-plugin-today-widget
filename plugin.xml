@@ -14,7 +14,9 @@
     <engine name="cordova" version="&gt;=6.0.0"/>
   </engines>
 
-  <platform name="ios">
+  <dependency id="cordova-plugin-triggi-native-data" url="git+ssh://git@github.com/olisto/cordova-plugin-triggi-native-data.git" commit="master"/>
+
+    <platform name="ios">
     <config-file target="config.xml" parent="/*"></config-file>
 
     <config-file parent="com.apple.security.application-groups" target="*-Debug.plist">
