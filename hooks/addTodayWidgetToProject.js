@@ -130,7 +130,7 @@ module.exports = function (context) {
       var widgetBundleId = WIDGET_BUNDLE_SUFFIX || 'widget';
       log('Your widget bundle id will be: ' + bundleId + '.' + widgetBundleId, 'info');
 
-      var dependencies = DEPENDENCIES ? dependencies.split(',') : [];
+      var dependencies = DEPENDENCIES ? DEPENDENCIES.split(',') : [];
       log('External dependencies are: ' + dependencies, 'info');
 
       var widgetFolder = path.join(iosFolder, widgetName);
