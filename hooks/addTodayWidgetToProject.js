@@ -87,7 +87,7 @@ module.exports = function (context) {
   var WIDGET_NAME = getCordovaParameter("WIDGET_NAME", contents);
   var WIDGET_BUNDLE_SUFFIX = getCordovaParameter("WIDGET_BUNDLE_SUFFIX", contents);
   var ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = getCordovaParameter("ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", contents);
-  var DEPENDENCY_PATH = getCordovaParameter("DEPENDENCY_PATH", contents);
+  var DEPENDENCIES = getCordovaParameter("DEPENDENCIES", contents);
 
   if (contents) {
     contents = contents.substring(contents.indexOf('<'));
@@ -130,8 +130,10 @@ module.exports = function (context) {
       var widgetBundleId = WIDGET_BUNDLE_SUFFIX || 'widget';
       log('Your widget bundle id will be: ' + bundleId + '.' + widgetBundleId, 'info');
 
+      var dependencies = DEPENDENCIES ? dependencies.split(',') : [];
+      log('External dependencies are: ' + dependencies, 'info');
+
       var widgetFolder = path.join(iosFolder, widgetName);
-      var dependencyFolder = path.join(iosFolder, projectName, DEPENDENCY_PATH);
       var sourceFiles = [];
       var resourceFiles = [];
       var configFiles = [];
@@ -168,53 +170,56 @@ module.exports = function (context) {
         }
       ];
 
-      var folders = [widgetFolder];
-      if (DEPENDENCY_PATH) {
-        folders.push(dependencyFolder);
+      function handleFile(file) {
+        if (!/^\..*/.test(file)) {
+          // Ignore junk files like .DS_Store
+          var fileExtension = path.extname(file);
+          switch (fileExtension) {
+              // Swift and Objective-C source files which need to be compiled
+            case '.swift':
+              projectContainsSwiftFiles = true;
+              sourceFiles.push(file);
+              break;
+            case '.h':
+            case '.m':
+              if (file === 'Bridging-Header.h' || file === 'Header.h') {
+                addBridgingHeader = true;
+                bridgingHeaderName = file;
+              }
+              sourceFiles.push(file);
+              break;
+              // Configuration files
+            case '.plist':
+            case '.entitlements':
+            case '.xcconfig':
+              replacePlaceholdersInPlist(path.join(widgetFolder, file), placeHolderValues);
+              if (fileExtension === '.xcconfig') {
+                addXcconfig = true;
+                xcconfigFileName = file;
+              }
+              if (fileExtension === '.entitlements') {
+                addEntitlementsFile = true;
+                entitlementsFileName = file;
+              }
+              configFiles.push(file);
+              break;
+              // Resources like storyboards, images, fonts, etc.
+            default:
+              resourceFiles.push(file);
+              break;
+          }
+        }
       }
 
-      folders.forEach(folder => {
-        fs.readdirSync(folder).forEach(file => {
-          if (!/^\..*/.test(file)) {
-            // Ignore junk files like .DS_Store
-            var fileExtension = path.extname(file);
-            switch (fileExtension) {
-                // Swift and Objective-C source files which need to be compiled
-              case '.swift':
-                projectContainsSwiftFiles = true;
-                sourceFiles.push(file);
-                break;
-              case '.h':
-              case '.m':
-                if (file === 'Bridging-Header.h' || file === 'Header.h') {
-                  addBridgingHeader = true;
-                  bridgingHeaderName = file;
-                }
-                sourceFiles.push(file);
-                break;
-                // Configuration files
-              case '.plist':
-              case '.entitlements':
-              case '.xcconfig':
-                replacePlaceholdersInPlist(path.join(widgetFolder, file), placeHolderValues);
-                if (fileExtension === '.xcconfig') {
-                  addXcconfig = true;
-                  xcconfigFileName = file;
-                }
-                if (fileExtension === '.entitlements') {
-                  addEntitlementsFile = true;
-                  entitlementsFileName = file;
-                }
-                configFiles.push(file);
-                break;
-                // Resources like storyboards, images, fonts, etc.
-              default:
-                resourceFiles.push(file);
-                break;
-            }
-          }
-        });
+      dependencies.forEach(file => {
+        handleFile(path.join(iosFolder, projectName, file));
       });
+
+      fs.readdirSync(widgetFolder).forEach(file => {
+        handleFile(file);
+      });
+
+
 
       log('Found following files in your widget folder:', 'info');
       console.log('Source-files: ');
