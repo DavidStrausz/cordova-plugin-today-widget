@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="11762" systemVersion="16A323" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" colorMatched="YES" initialViewController="M4Y-Lb-cyx">
+    <device id="retina4_7" orientation="portrait">
+        <adaptation id="fullscreen"/>
+    </device>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="11757"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <scenes>
+        <!--Today View Controller-->
+        <scene sceneID="cwh-vc-ff4">
+            <objects>
+                <viewController id="M4Y-Lb-cyx" customClass="TodayViewController" customModule="NowWidget" customModuleProvider="target" sceneMemberID="viewController">
+                    <layoutGuides>
+                        <viewControllerLayoutGuide type="top" id="Ft6-oW-KC0"/>
+                        <viewControllerLayoutGuide type="bottom" id="FKl-LY-JtV"/>
+                    </layoutGuides>
+                    <view key="view" contentMode="scaleToFill" simulatedAppContext="notificationCenter" id="S3S-Oj-5AN">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="110"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WJw-Fa-LCz">
+                                <rect key="frame" x="0.0" y="0.0" width="320" height="110"/>
+                                <state key="normal">
+                                    <color key="titleColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                                </state>
+                                <connections>
+                                    <action selector="openApp:" destination="M4Y-Lb-cyx" eventType="touchUpInside" id="nGM-Uj-8Ni"/>
+                                </connections>
+                            </button>
+                            <activityIndicatorView opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" hidesWhenStopped="YES" animating="YES" style="gray" translatesAutoresizingMaskIntoConstraints="NO" id="vWT-Yz-vXb">
+                                <rect key="frame" x="150" y="45" width="20" height="20"/>
+                            </activityIndicatorView>
+                        </subviews>
+                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                        <constraints>
+                            <constraint firstItem="WJw-Fa-LCz" firstAttribute="centerX" secondItem="S3S-Oj-5AN" secondAttribute="centerX" id="Arl-xn-eKp"/>
+                            <constraint firstItem="vWT-Yz-vXb" firstAttribute="centerX" secondItem="S3S-Oj-5AN" secondAttribute="centerX" id="Bx8-eW-xmD"/>
+                            <constraint firstItem="vWT-Yz-vXb" firstAttribute="centerY" secondItem="S3S-Oj-5AN" secondAttribute="centerY" id="Otc-Fi-bij"/>
+                            <constraint firstItem="FKl-LY-JtV" firstAttribute="top" secondItem="WJw-Fa-LCz" secondAttribute="bottom" id="ULI-J3-5K5"/>
+                            <constraint firstItem="WJw-Fa-LCz" firstAttribute="centerY" secondItem="S3S-Oj-5AN" secondAttribute="centerY" id="UMp-Ge-usp"/>
+                            <constraint firstItem="WJw-Fa-LCz" firstAttribute="leading" secondItem="S3S-Oj-5AN" secondAttribute="leading" id="hn2-9U-SWo"/>
+                            <constraint firstAttribute="trailing" secondItem="WJw-Fa-LCz" secondAttribute="trailing" id="jAM-gX-oFu"/>
+                            <constraint firstItem="WJw-Fa-LCz" firstAttribute="top" secondItem="Ft6-oW-KC0" secondAttribute="bottom" id="vA2-St-dg1"/>
+                        </constraints>
+                    </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
+                    <nil key="simulatedStatusBarMetrics"/>
+                    <nil key="simulatedTopBarMetrics"/>
+                    <nil key="simulatedBottomBarMetrics"/>
+                    <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+                    <size key="freeformSize" width="320" height="110"/>
+                    <connections>
+                        <outlet property="appButton" destination="WJw-Fa-LCz" id="DuL-fU-RAJ"/>
+                        <outlet property="spinner" destination="vWT-Yz-vXb" id="PzT-n0-av2"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="vXp-U4-Rya" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="25.600000000000001" y="35.082458770614693"/>
+        </scene>
+    </scenes>
+</document>

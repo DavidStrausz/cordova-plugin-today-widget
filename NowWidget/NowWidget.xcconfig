@@ -1,0 +1,5 @@
+#include "../cordova/build-extras.xcconfig"
+
+IPHONEOS_DEPLOYMENT_TARGET = 9.0
+TARGETED_DEVICE_FAMILY = 1,2
+PRODUCT_BUNDLE_IDENTIFIER = io.triggi.triggi.NowWidget
