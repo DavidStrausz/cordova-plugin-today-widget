@@ -161,10 +161,10 @@ module.exports = function(context) {
 
 
     if(DEPENDENCIES) {
-      dependencies.forEach(path => {
+      dependencies.forEach(file => {
         var srcFile = path.join(
           iosFolder,
-          path
+          file
         );
 
         copyFileSync(srcFile, iosFolder);
