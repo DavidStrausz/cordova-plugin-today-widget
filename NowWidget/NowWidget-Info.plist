@@ -5,11 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleDisplayName</key>
-	<string>Olisto</string>
+	<string>__DISPLAY_NAME__</string>
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>io.triggi.triggi.NowWidget</string>
+	<string>__APP_IDENTIFIER__.__BUNDLE_SUFFIX__</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -17,9 +17,9 @@
 	<key>CFBundlePackageType</key>
 	<string>XPC!</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.24.3</string>
+	<string>__BUNDLE_SHORT_VERSION_STRING__</string>
 	<key>CFBundleVersion</key>
-	<string>0001</string>
+	<string>__BUNDLE_VERSION__</string>
 	<key>NSExtension</key>
 	<dict>
 		<key>NSExtensionMainStoryboard</key>

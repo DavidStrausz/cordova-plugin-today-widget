@@ -4,7 +4,7 @@
 <dict>
 	<key>com.apple.security.application-groups</key>
 	<array>
-		<string>group.io.triggi.triggi</string>
+		<string>group.__APP_IDENTIFIER__</string>
 	</array>
 </dict>
 </plist>
