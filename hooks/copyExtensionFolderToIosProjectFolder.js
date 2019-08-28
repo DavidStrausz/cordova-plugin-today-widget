@@ -165,7 +165,7 @@ module.exports = function(context) {
         var srcFile = path.join(
           iosFolder,
           projectName,
-          file
+          file.trim()
         );
 
         copyFileSync(srcFile, iosFolder);
