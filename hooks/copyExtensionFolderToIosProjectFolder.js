@@ -16,7 +16,7 @@ function log(logString, type) {
         '\x1b[40m' +
         '\x1b[37m' +
         '\x1b[2m' +
-        '☝️ [INFO] ' +
+        '☝️ Widget [INFO] ' +
         '\x1b[0m\x1b[40m' +
         '\x1b[33m'; // fgWhite, dim, reset, bgBlack, fgYellow
       break;
