@@ -87,7 +87,6 @@ module.exports = function (context) {
   var WIDGET_NAME = getCordovaParameter("WIDGET_NAME", contents);
   var WIDGET_BUNDLE_SUFFIX = getCordovaParameter("WIDGET_BUNDLE_SUFFIX", contents);
   var ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = getCordovaParameter("ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", contents);
-  var DEPENDENCIES = getCordovaParameter("DEPENDENCIES", contents);
 
   if (contents) {
     contents = contents.substring(contents.indexOf('<'));
@@ -129,9 +128,6 @@ module.exports = function (context) {
 
       var widgetBundleId = WIDGET_BUNDLE_SUFFIX || 'widget';
       log('Your widget bundle id will be: ' + bundleId + '.' + widgetBundleId, 'info');
-
-      var dependencies = DEPENDENCIES ? DEPENDENCIES.split(',') : [];
-      log('External dependencies are: ' + dependencies, 'info');
 
       var widgetFolder = path.join(iosFolder, widgetName);
       var sourceFiles = [];
@@ -210,10 +206,6 @@ module.exports = function (context) {
           }
         }
       }
-
-      dependencies.forEach(file => {
-        handleFile(path.basename(file.trim()));
-      });
 
       fs.readdirSync(widgetFolder).forEach(file => {
         handleFile(file);
