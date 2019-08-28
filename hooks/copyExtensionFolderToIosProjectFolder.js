@@ -168,11 +168,13 @@ module.exports = function(context) {
           file.trim()
         );
 
-        copyFileSync(srcFile, iosFolder);
-      })
+        var destFolder = path.join(iosFolder, widgetName);
+
+        copyFileSync(srcFile, destFolder);
+      });
+      log('Successfully copied dependency files!', 'success');
     }
 
-    log('Successfully copied dependency files!', 'success');
     console.log('\x1b[0m'); // reset
 
     deferral.resolve();
