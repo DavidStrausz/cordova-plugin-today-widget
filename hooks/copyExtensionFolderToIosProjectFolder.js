@@ -126,7 +126,10 @@ module.exports = function(context) {
     // Get the widget name and location from the parameters or the config file
     var WIDGET_NAME = getCordovaParameter("WIDGET_NAME", contents);
     var WIDGET_PATH = getCordovaParameter("WIDGET_PATH", contents);
+    var DEPENDENCIES = getCordovaParameter("DEPENDENCIES", contents);
+
     var widgetName = WIDGET_NAME || projectName + ' Widget';
+    var dependencies = DEPENDENCIES ? DEPENDENCIES.split(',') : [];
 
     if (WIDGET_PATH) {
         srcFolder = path.join(
@@ -151,9 +154,24 @@ module.exports = function(context) {
     // Copy widget folder
     copyFolderRecursiveSync(
       srcFolder,
-      path.join(context.opts.projectRoot, 'platforms', 'ios')
+      iosFolder
     );
-    log('Successfully copied Widget folder!', 'success');
+
+    log('Successfully copied widget folder!', 'success');
+
+
+    if(DEPENDENCIES) {
+      dependencies.forEach(path => {
+        var srcFile = path.join(
+          iosFolder,
+          path
+        );
+
+        copyFileSync(srcFile, iosFolder);
+      })
+    }
+
+    log('Successfully copied dependency files!', 'success');
     console.log('\x1b[0m'); // reset
 
     deferral.resolve();
