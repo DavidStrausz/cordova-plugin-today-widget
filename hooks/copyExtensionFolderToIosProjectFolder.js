@@ -58,7 +58,7 @@ var copyFileSync = function(source, target, prefix) {
     }
   }
 
-  if (ref) {
+  if (prefix) {
     var prefixedTarget = path.join(path.dirname(targetFile), prefix + '-' + path.basename(targetFile));
     fs.writeFileSync(prefixedTarget, fs.readFileSync(source));
   } else {
