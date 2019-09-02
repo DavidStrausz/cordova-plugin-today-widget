@@ -358,7 +358,7 @@ module.exports = function (context) {
           var buildSettingsObj = configurations[key].buildSettings;
           if (typeof buildSettingsObj['PRODUCT_NAME'] !== 'undefined') {
             var productName = buildSettingsObj['PRODUCT_NAME'];
-            if (productName.indexOf('Widget') >= 0) {
+            if (productName.indexOf(widgetName) >= 0) {
               if (addXcconfig) {
                 configurations[key].baseConfigurationReference =
                   xcconfigReference + ' /* ' + xcconfigFileName + ' */';
