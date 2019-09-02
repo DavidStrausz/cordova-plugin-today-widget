@@ -22,7 +22,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 	}
 
 	func loadData() -> Void {
-        sharedData = LoadSharedData()
+        sharedData = loadSharedData()
         if sharedData != nil && sharedData!.isDefined() {
             print("Missing data")
             setButtonTitle("Not logged in. Open Olisto to continue.")
