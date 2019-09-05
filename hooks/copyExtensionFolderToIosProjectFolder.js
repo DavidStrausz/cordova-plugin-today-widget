@@ -58,12 +58,9 @@ var copyFileSync = function(source, target, prefix) {
     }
   }
 
-  if (prefix) {
-    var prefixedTarget = path.join(path.dirname(targetFile), prefix + '-' + path.basename(targetFile));
-    fs.writeFileSync(prefixedTarget, fs.readFileSync(source));
-  } else {
-    fs.writeFileSync(targetFile, fs.readFileSync(source));
-  }
+  var dest = prefix ? path.join(path.dirname(targetFile), prefix + '-' + path.basename(targetFile)) : targetFile;
+  fs.writeFileSync(dest, fs.readFileSync(source));
+
 };
 var copyFolderRecursiveSync = function(source, target) {
   var files = [];

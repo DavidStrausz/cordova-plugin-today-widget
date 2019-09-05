@@ -207,10 +207,7 @@ module.exports = function (context) {
         }
       }
 
-      fs.readdirSync(widgetFolder).forEach(file => {
-        handleFile(file);
-      });
-
+      fs.readdirSync(widgetFolder).forEach(handleFile);
 
 
       log('Found following files in your widget folder:', 'info');
