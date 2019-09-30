@@ -47,8 +47,16 @@ public func drawButton(_ view: UIView, _ position: Int, _ color: UIColor, _ titl
 	let iconMargin: CGFloat = 5.0
 	let titleSpacing: CGFloat = 5.0
 
-	let imageSize = button.imageView!.image!.size
-	let titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: -imageSize.width, bottom: -(imageSize.height - titleSpacing), right: 0.0)
+    var titleEdgeInsets = UIEdgeInsets.init();
+    
+    if #available(iOS 13.0, *) {
+        let imageSize = button.imageView!.image!.size
+        let frameSize = button.imageView!.frame
+        titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: -(frameSize.width - 2*titleSpacing), bottom: -(imageSize.height - titleSpacing), right: 0.0)
+    } else {
+        let imageSize = button.imageView!.image!.size
+        titleEdgeInsets = UIEdgeInsets.init(top: 0.0, left: -imageSize.width, bottom: -(imageSize.height - titleSpacing), right: 0.0)
+    }
 	let imageEdgeInsets = UIEdgeInsets.init(top: iconMargin, left: iconMargin, bottom: iconMargin, right: iconMargin);
 
 	button.imageEdgeInsets = imageEdgeInsets

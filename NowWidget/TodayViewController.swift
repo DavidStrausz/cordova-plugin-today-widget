@@ -23,14 +23,16 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 
 	func loadData() -> Void {
         sharedData = loadSharedData()
-        if sharedData != nil && sharedData!.isDefined() {
+        if sharedData == nil || !sharedData!.isDefined() {
             print("Missing data")
             setButtonTitle("Not logged in. Open Olisto to continue.")
+            return
         }
 
 		if (sharedData!.hasButtons()) {
 			print("No buttons configured")
 			setButtonTitle("No buttons configured. Open Olisto to continue.")
+            return
 		}
 
 		NSLog("Data initialized. \nServer baseURL: \n\(sharedData!.baseUrl!), \ntoken: \n\(sharedData!.token!),\nuuid: \n\(sharedData!.phoneId!)");
@@ -121,7 +123,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 			loadData()
 		}
 
-		if (sharedData == nil || activeDisplayMode == NCWidgetDisplayMode.compact) {
+        if (sharedData == nil || !sharedData!.isDefined() || activeDisplayMode == NCWidgetDisplayMode.compact) {
 			self.preferredContentSize = CGSize(width: 0.0, height: 110.0)
         } else if (sharedData!.buttons.count <= 12) {
 			self.preferredContentSize = CGSize(width: 0.0, height: 220.0)
@@ -145,7 +147,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 		super.viewDidLoad()
 
 		loadData()
-		if (sharedData != nil) {
+        if (sharedData != nil && sharedData!.isDefined()) {
 			if #available(iOSApplicationExtension 10.0, *) {
 				setWidgetSize()
 			}
@@ -156,7 +158,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 	func widgetPerformUpdate(completionHandler: (@escaping (NCUpdateResult) -> Void)) {
 		// Perform any setup necessary in order to update the view.
 		loadData()
-		if (sharedData != nil) {
+		if (sharedData != nil && sharedData!.isDefined()) {
 			if #available(iOSApplicationExtension 10.0, *) {
 				setWidgetSize()
 			}
