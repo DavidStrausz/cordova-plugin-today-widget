@@ -22,6 +22,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 	}
 
 	func loadData() -> Void {
+        spinner.startAnimating();
         sharedData = loadSharedData()
         if sharedData == nil || !sharedData!.isDefined() {
             print("Missing data")
@@ -119,19 +120,17 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 
 	@available(iOSApplicationExtension 10.0, *)
 	func widgetActiveDisplayModeDidChange(_ activeDisplayMode: NCWidgetDisplayMode, withMaximumSize maxSize: CGSize) {
-		if (sharedData == nil) {
-			loadData()
-		}
+
+        loadData()
 
         if (sharedData == nil || !sharedData!.isDefined() || activeDisplayMode == NCWidgetDisplayMode.compact) {
 			self.preferredContentSize = CGSize(width: 0.0, height: 110.0)
         } else if (sharedData!.buttons.count <= 12) {
 			self.preferredContentSize = CGSize(width: 0.0, height: 220.0)
-			drawButtons()
 		} else {
 			self.preferredContentSize = CGSize(width: 0.0, height: 330.0)
-			drawButtons()
 		}
+        drawButtons()
 	}
 
 	@available(iOSApplicationExtension 10.0, *)
