@@ -1,6 +1,6 @@
 {
   "name": "cordova-plugin-today-widget",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Add a toaday widget app extension target to your cordova project.",
   "repository": {
     "type": "git",
