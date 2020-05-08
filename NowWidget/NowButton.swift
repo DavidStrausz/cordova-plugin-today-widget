@@ -109,7 +109,9 @@ func hexStringToUIColor (hex:String) -> UIColor {
 }
 
 func primaryColor() -> UIColor {
-	if #available(iOS 10.0, *) {
+	if #available(iOS 13.0, *) {
+		return UIColor.label
+	} else if #available(iOS 10.0, *){
 		return UIColor.darkText
 	} else {
 		return UIColor.lightText
