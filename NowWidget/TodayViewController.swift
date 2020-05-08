@@ -30,7 +30,7 @@ class TodayViewController: UIViewController, NCWidgetProviding {
             return
         }
 
-		if (sharedData!.hasButtons()) {
+		if !sharedData!.hasButtons() {
 			print("No buttons configured")
 			setButtonTitle("No buttons configured. Open Olisto to continue.")
             return
@@ -92,7 +92,11 @@ class TodayViewController: UIViewController, NCWidgetProviding {
 	func drawButtons() {
         print(sharedData!.buttons)
 
-		appButton.isHidden = true
+        if !sharedData!.hasButtons() {
+            appButton.isHidden = false
+            return
+        }
+        appButton.isHidden = true
 		spinner.stopAnimating()
 
 		for button in drawnButtons {
