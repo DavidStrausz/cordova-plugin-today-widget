@@ -87,6 +87,7 @@ module.exports = function (context) {
   var WIDGET_NAME = getCordovaParameter("WIDGET_NAME", contents);
   var WIDGET_BUNDLE_SUFFIX = getCordovaParameter("WIDGET_BUNDLE_SUFFIX", contents);
   var ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = getCordovaParameter("ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", contents);
+  var SWIFT_VERSION = getCordovaParameter("SWIFT_VERSION", contents);
 
   if (contents) {
     contents = contents.substring(contents.indexOf('<'));
@@ -366,7 +367,7 @@ module.exports = function (context) {
                 log('Added entitlements file reference to build settings!', 'info');
               }
               if (projectContainsSwiftFiles) {
-                buildSettingsObj['SWIFT_VERSION'] = '3.0';
+                buildSettingsObj['SWIFT_VERSION'] = SWIFT_VERSION || '3.0';
                 buildSettingsObj['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES || 'YES';
                 log('Added build settings for swift support!', 'info');
               }
