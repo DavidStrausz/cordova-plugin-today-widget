@@ -87,6 +87,7 @@ module.exports = function (context) {
   var WIDGET_NAME = getCordovaParameter("WIDGET_NAME", contents);
   var WIDGET_BUNDLE_SUFFIX = getCordovaParameter("WIDGET_BUNDLE_SUFFIX", contents);
   var ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = getCordovaParameter("ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", contents);
+  var PROVISIONING_PROFILE = getCordovaParameter("PROVISIONING_PROFILE", contents);
 
   if (contents) {
     contents = contents.substring(contents.indexOf('<'));
@@ -352,6 +353,7 @@ module.exports = function (context) {
       var configurations = pbxProject.pbxXCBuildConfigurationSection();
       for (var key in configurations) {
         if (typeof configurations[key].buildSettings !== 'undefined') {
+          console.log(configurations[key].buildSettings);
           var buildSettingsObj = configurations[key].buildSettings;
           if (typeof buildSettingsObj['PRODUCT_NAME'] !== 'undefined') {
             var productName = buildSettingsObj['PRODUCT_NAME'];
@@ -378,6 +380,12 @@ module.exports = function (context) {
                   bridgingHeaderName +
                   '"';
                 log('Added bridging header reference to build settings!', 'info');
+              }
+              if (PROVISIONING_PROFILE) {
+                buildSettingsObj['PROVISIONING_PROFILE'] = PROVISIONING_PROFILE;
+                buildSettingsObj['CODE_SIGN_STYLE'] = 'Manual';
+                buildSettingsObj['CODE_SIGN_IDENTITY'] = '"iPhone Distribution"';
+                log('Added signing identity to build settings!', 'info');
               }
             }
           }
