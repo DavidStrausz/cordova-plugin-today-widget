@@ -87,7 +87,8 @@ module.exports = function (context) {
   var WIDGET_NAME = getCordovaParameter("WIDGET_NAME", contents);
   var WIDGET_BUNDLE_SUFFIX = getCordovaParameter("WIDGET_BUNDLE_SUFFIX", contents);
   var ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = getCordovaParameter("ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", contents);
-  var PROVISIONING_PROFILE = getCordovaParameter("PROVISIONING_PROFILE", contents);
+  var DEBUG_PROVISIONING_PROFILE = getCordovaParameter("DEBUG_PROVISIONING_PROFILE", contents);
+  var RELEASE_PROVISIONING_PROFILE = getCordovaParameter("RELEASE_PROVISIONING_PROFILE", contents);
 
   if (contents) {
     contents = contents.substring(contents.indexOf('<'));
@@ -381,16 +382,23 @@ module.exports = function (context) {
                   '"';
                 log('Added bridging header reference to build settings!', 'info');
               }
-              if (PROVISIONING_PROFILE) {
-                buildSettingsObj['PROVISIONING_PROFILE'] = PROVISIONING_PROFILE;
+              if (DEBUG_PROVISIONING_PROFILE && configurations[key].name === 'Debug') {
+                buildSettingsObj['PROVISIONING_PROFILE'] = DEBUG_PROVISIONING_PROFILE;
                 buildSettingsObj['CODE_SIGN_STYLE'] = 'Manual';
                 buildSettingsObj['CODE_SIGN_IDENTITY'] = '"iPhone Distribution"';
-                log('Added signing identity to build settings!', 'info');
+                log('Added signing identity to debug build settings!', 'info');
+              }
+              if (RELEASE_PROVISIONING_PROFILE && configurations[key].name === 'Release') {
+                buildSettingsObj['PROVISIONING_PROFILE'] = RELEASE_PROVISIONING_PROFILE;
+                buildSettingsObj['CODE_SIGN_STYLE'] = 'Manual';
+                buildSettingsObj['CODE_SIGN_IDENTITY'] = '"iPhone Distribution"';
+                log('Added signing identity to release build settings!', 'info');
               }
             }
           }
         }
       }
+      console.log(configurations);
 
       // Write the modified project back to disc
       log('Writing the modified project back to disk ...', 'info');
