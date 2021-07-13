@@ -86,9 +86,9 @@ module.exports = function (context) {
   // Get the plugin variables from the parameters or the config file
   var WIDGET_NAME = getCordovaParameter("WIDGET_NAME", contents);
   var WIDGET_BUNDLE_SUFFIX = getCordovaParameter("WIDGET_BUNDLE_SUFFIX", contents);
-  var ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = getCordovaParameter("ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", contents);
-  var DEBUG_PROVISIONING_PROFILE = getCordovaParameter("DEBUG_PROVISIONING_PROFILE", contents);
-  var RELEASE_PROVISIONING_PROFILE = getCordovaParameter("RELEASE_PROVISIONING_PROFILE", contents);
+  var ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = getCordovaParameter("WIDGET_ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES", contents);
+  var DEBUG_PROVISIONING_PROFILE = getCordovaParameter("WIDGET_DEBUG_PROVISIONING_PROFILE", contents);
+  var RELEASE_PROVISIONING_PROFILE = getCordovaParameter("WIDGET_RELEASE_PROVISIONING_PROFILE", contents);
 
   if (contents) {
     contents = contents.substring(contents.indexOf('<'));
