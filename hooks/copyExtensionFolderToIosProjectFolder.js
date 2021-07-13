@@ -128,7 +128,7 @@ module.exports = function(context) {
     // Get the widget name and location from the parameters or the config file
     var WIDGET_NAME = getCordovaParameter("WIDGET_NAME", contents);
     var WIDGET_PATH = getCordovaParameter("WIDGET_PATH", contents);
-    var DEPENDENCIES = getCordovaParameter("DEPENDENCIES", contents);
+    var DEPENDENCIES = getCordovaParameter("WIDGET_DEPENDENCIES", contents);
 
     var widgetName = WIDGET_NAME || projectName + ' Widget';
     var dependencies = DEPENDENCIES ? DEPENDENCIES.split(',') : [];
