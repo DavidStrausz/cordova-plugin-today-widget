@@ -352,7 +352,6 @@ module.exports = function (context) {
 
       // Add build settings for Swift support, bridging header and xcconfig files
       var configurations = pbxProject.pbxXCBuildConfigurationSection();
-      console.log(configurations);
       for (var key in configurations) {
         if (typeof configurations[key].buildSettings !== 'undefined') {
           var buildSettingsObj = configurations[key].buildSettings;
@@ -398,7 +397,6 @@ module.exports = function (context) {
           }
         }
       }
-      console.log(configurations);
 
       // Write the modified project back to disc
       log('Writing the modified project back to disk ...', 'info');
